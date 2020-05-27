@@ -32,7 +32,7 @@ class Train
 
   def get_route(route)
     @route = route
-    @current_station = route.stations_list.first
+    @current_station = route.stations.first
   end
 
   def to_next_station
@@ -44,15 +44,15 @@ class Train
   end
 
   def next_station
-    unless @current_station == @route.stations_list.last
-      next_station = @route.stations_list[@route.stations_list.find_index(@current_station) + 1]
+    unless @current_station == @route.stations.last
+      next_station = @route.stations[@route.stations.find_index(@current_station) + 1]
     end
     next_station
   end
 
   def prev_station
-    unless @current_station == @route.stations_list.first
-      prev_station = @route.stations_list[@route.stations_list.find_index(@current_station) - 1]
+    unless @current_station == @route.stations.first
+      prev_station = @route.stations[@route.stations.find_index(@current_station) - 1]
     end
     prev_station
   end

@@ -4,14 +4,16 @@ module InstanceCounter
     base.send :include, InstanceMethods
   end
   module ClassMethods
-    attr_reader :instances
+    def instances
+      @instances ||= 0
+    end
   end
 
   module InstanceMethods
     protected
 
     def register_instance
-      self.class.instance_eval { @instances = 0 } if self.class.instances.nil?
+      self.class.instance_eval { @instances ||= 0 }
       self.class.instance_eval { @instances += 1 }
     end
   end

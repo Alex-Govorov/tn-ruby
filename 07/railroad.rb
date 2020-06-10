@@ -249,6 +249,11 @@ class RailRoad
 
   def wagon_info_block
     ->(wagon, index) { puts "  :Вагон№:#{index}, тип:#{wagon.type}, #{wagon_status(wagon)}" }
+    # Изначально в train_info_block была такая-же, форма записи.
+    # Но т.к . в отличии от wagon_info_block там используется блок из 2х строк,
+    # на него ругался rubocop с ошибкой "use the lambda method for multiline lambdas"
+    # и я переписал train_info_block, чтобы метод соответствовал соглашению по стилю:
+    # https://github.com/rubocop-hq/ruby-style-guide#lambda-multi-line
   end
 
   def wagon_status(wagon)

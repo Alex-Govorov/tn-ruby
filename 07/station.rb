@@ -27,10 +27,10 @@ class Station
     false
   end
 
-  def trains_info(&block)
+  def trains_info
     raise 'No block given' unless block_given?
 
-    @trains.each { |train| block.call(train) }
+    @trains.each { |train| yield(train) }
   end
 
   private

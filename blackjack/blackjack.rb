@@ -1,12 +1,15 @@
 require_relative 'card.rb'
 require_relative 'deck.rb'
 require_relative 'hand.rb'
+require_relative 'account.rb'
 
-deck1 = Deck.new
+player_account = Account.new(100)
+dealer_account = Account.new(100)
 
-hand1 = Hand.new
+puts player_account.amount
+puts dealer_account.amount
 
-3.times { hand1.take_card_from_deck(deck1) }
+player_account.transfer_to(dealer_account, 120)
 
-puts hand1.show
-puts hand1.value
+puts player_account.amount
+puts dealer_account.amount

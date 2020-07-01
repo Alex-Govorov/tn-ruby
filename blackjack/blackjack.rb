@@ -6,7 +6,7 @@ require_relative 'player.rb'
 require_relative 'dealer.rb'
 
 class BlackJack
-  MENU_METHODS = { 1 => :pass, 2 => :add_card, 3 => :open }.freeze
+  MENU_METHODS = { 1 => :pass, 2 => :add_card, 3 => :open_cards }.freeze
 
   def initialize
     player_setup
@@ -16,12 +16,21 @@ class BlackJack
   end
 
   def start
+    deck_replacement if deck_empty?
     deal_initial_cards
     make_bets
     player_turn
   end
 
   private
+
+  def deck_empty?
+    true if @deck.cards.count < 6
+  end
+
+  def deck_replacement
+    @deck = Deck.new
+  end
 
   def player_setup
     puts 'Введите ваше имя:'
@@ -68,6 +77,7 @@ class BlackJack
   end
 
   def player_turn
+    open_cards?
     hud
     menu
     choice = gets.chomp.to_i
@@ -75,9 +85,84 @@ class BlackJack
   end
 
   def menu
-    puts "Ваш ход:
-    1. Пропустить
-    2. Добавить карту
-    3. Открыть карты"
+    puts 'Ваш ход:'
+    puts '1. Пропустить'
+    puts '2. Добавить карту' if @player.hand.cards.count == 2
+    puts '3. Открыть карты'
+  end
+
+  def pass
+    dealer_turn
+  end
+
+  def dealer_turn
+    @dealer.decide(@deck)
+    player_turn
+  end
+
+  def add_card
+    @player.hand.take_card_from_deck(@deck) if @player.hand.cards.count == 2
+    dealer_turn
+  end
+
+  def open_cards
+    @open = true
+    hud
+    reward_the_winner
+    try_again?
+  end
+
+  def open_cards?
+    open_cards if @player.hand.cards.count == 3 && @dealer.hand.cards.count == 3
+  end
+
+  def who_win?
+    return if @player.hand.value == @dealer.hand.value
+
+    winner
+  end
+
+  def winner
+    if (@player.hand.value <= 21 && @player.hand.value > @dealer.hand.value) ||
+       (@dealer.hand.value > 21 && @player.hand.value <= 21)
+      @player
+    elsif @dealer.hand.value <= 21
+      @dealer
+    end
+  end
+
+  def reward_the_winner
+    if who_win?.nil?
+      money_back
+    else
+      puts "Победитель: #{who_win?.name}"
+      @game_account.transfer_to(who_win?.account, @game_account.amount)
+    end
+  end
+
+  def money_back
+    puts 'Ничья, деньги возвращаются игрокам'
+    @game_account.transfer_to(@player.account, @game_account.amount / 2)
+    @game_account.transfer_to(@dealer.account, @game_account.amount)
+  end
+
+  def try_again?
+    puts "Хотите сыграть еще раз?
+    1. Да
+    2. Нет"
+    choice = gets.chomp.to_i
+    case choice
+    when 1
+      hands_clear
+      @open = nil
+      start
+    when 2
+      puts 'Повезет в следующий раз'
+    end
+  end
+
+  def hands_clear
+    @player.hand.drop_cards
+    @dealer.hand.drop_cards
   end
 end

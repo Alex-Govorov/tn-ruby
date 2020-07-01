@@ -2,11 +2,13 @@ class Hand
   attr_reader :cards
 
   def take_card_from_deck(deck)
+    raise 'В колоде закончились карты' if deck.cards.empty?
+
     @cards ||= []
     @cards << deck.cards.shift
   end
 
-  def show
+  def cards_with_suit
     @cards.each_with_object([]) do |card, cards|
       cards << "#{card.value}#{card.suit}"
     end
@@ -23,5 +25,9 @@ class Hand
     end
     total -= 10 if total > 21 && ace_count.positive?
     total
+  end
+
+  def drop_cards
+    @cards.clear
   end
 end

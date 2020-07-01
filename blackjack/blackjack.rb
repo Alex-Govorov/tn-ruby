@@ -34,7 +34,7 @@ class BlackJack
 
   def player_setup
     puts 'Введите ваше имя:'
-    player_name = 'Alex'
+    player_name = gets.chomp
     @player = Player.new(player_name)
   end
 
